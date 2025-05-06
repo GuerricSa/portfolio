@@ -1,14 +1,16 @@
-# Ignore node_modules des deux projets
+# Ignore node_modules
 front/node_modules/
 back/node_modules/
 
-# Ignore les fichiers .env
+# Ignore les fichiers d'environnement
 front/.env
 back/.env
 
-# Autres fichiers courants à ignorer
+# Ignore les builds
+front/build/
+back/build/
+
+# Autres fichiers à ignorer
 .DS_Store
 .env.local
 .env.*.local
-dist/
-build/
