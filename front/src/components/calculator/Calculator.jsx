@@ -1,0 +1,310 @@
+import { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import flow from '../../content/Flow';
+import ReCAPTCHA from 'react-google-recaptcha';
+import { PopupButton } from "react-calendly";
+import './calculator.scss';
+
+
+export default function Calculator() {
+  const [step, setStep] = useState('Q1');
+  const [answers, setAnswers] = useState({});
+  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const [responseMsg, setResponseMsg] = useState('');
+  const [token, setToken] = useState('');
+  const [emailStepDone, setEmailStepDone] = useState(false);
+
+  const current = flow[step];
+
+  const handleAnswer = (value) => {
+    const currentAnswer = Array.isArray(value) ? value : [value];
+
+    let nextStep;
+    if (current.options && Array.isArray(current.options)) {
+      nextStep = current.options.find(
+        (opt) => value === opt.value || currentAnswer.includes(opt.value)
+      )?.next;
+    } else if (current.next) {
+      nextStep = current.next;
+    }
+
+    setAnswers((prev) => ({ ...prev, [step]: value }));
+
+    if (nextStep && typeof nextStep === 'string') {
+      setStep(nextStep);
+    } else {
+      setStep(null);
+    }
+  };
+
+  const handleRestart = () => {
+    setStep('Q1');
+    setAnswers({});
+  };
+
+  const replacePlaceholders = (text) => {
+    // Récupération des réponses de l'utilisateur
+    const nbPages = answers['Q10'] || 1;
+    const hasMockup = answers['Q7'] ? "avec des maquettes" : "sans maquettes" ;
+    const siteType = flow["Q8"].options.find(opt => opt.value === answers["Q8"])?.label;
+    const specs = answers["Q9"]
+  ? `et avec ${answers["Q9"].length > 1 ? 'les options' : 'l\'option'} : <ul>${answers["Q9"].map(answer => `<li class="list-disc list-inside py-4 font-semibold">${flow['Q9'].options.find(opt => opt.value === answer)?.label}</li>`).join("")}</ul>`
+  : null;
+
+
+    // Calcul du tarif estimé
+    let total = 600;
+    if (nbPages > 3) {
+      total = 400
+    }
+    if (hasMockup) total += 300;
+    total *= nbPages;
+
+    if (siteType === 'Un site marchand') total += 1000;
+    if (specs.includes('Blog')) total += 1000;
+    if (specs.includes('Connexions à des outils tiers')) total += 1000;
+    if (specs.includes('Site multilingue')) total += Math.max(600, 300 * nbPages);
+
+    const newText = `D’après les estimations, pour un ${siteType.toLowerCase()} de ${nbPages} pages, ${hasMockup} ${specs ? specs : ""}il faut compter : <span class="block text-tertiary text-4xl font-bold">${total}€</span>
+    Bien sûr, ceci n’est qu’une estimation. Si vous souhaitez approfondir le sujet, prenez un rendez-vous sur mon Calendly ou me contacter directement par message, je serai ravi d’en discuter.`
+
+    return newText
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const updatedFormData = {
+      ...formData,
+      answers: JSON.stringify(answers),
+    };
+    console.log(updatedFormData)
+
+    try {
+      const response = await fetch('http://localhost:5050/api/contact', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ ...updatedFormData, token }),
+      });
+
+      const data = await response.json();
+      setEmailStepDone(true);
+
+      if (response.ok) {
+        setResponseMsg(data.success);
+      } else {
+        setResponseMsg(data.error || 'Erreur inconnue.');
+      }
+    } catch (error) {
+      setResponseMsg('Une erreur est survenue.');
+      console.error(error);
+    }
+  };
+
+  const handleChange = (e) => {
+    setFormData(prev => ({
+      ...prev,
+      [e.target.name]: e.target.value
+    }));
+  };
+
+
+  const renderEnding = (el) => {
+    // On ne montre le résultat que si l'email est rempli
+    if (el.key === 'e5' && !emailStepDone) {
+      return (
+        <div className="text-center">
+          <h2 className="text-xl font-bold mb-4">Avant de voir le résultat, entrez votre email</h2>
+          <form className="space-y-4" method="POST" onSubmit={handleSubmit}>
+            <input type="text" name="name" placeholder="Votre nom" className="w-full border p-2 rounded" required onChange={handleChange} value={formData.name} />
+            <input type="email" name="email" placeholder="Votre email" className="w-full border p-2 rounded" required  onChange={handleChange} value={formData.email} />
+            <textarea name="message" placeholder="Avez-vous autre chose à ajouter ?" className="w-full border p-2 rounded h-32" onChange={handleChange} value={formData.message} />
+            <ReCAPTCHA
+              sitekey="6LdGaSkrAAAAACNZDvPmbsTJXtoKGn2kYC-97EvC"
+              onChange={setToken}
+            />
+            <button type="submit" className="bg-primary text-secondary font-semibold px-4 py-2 rounded hover:bg-tertiary hover:text-primary transition">Envoyer</button>
+            {responseMsg && <p>{responseMsg}</p>}
+          </form>
+        </div>
+      );
+    }
+
+    // Affichage final du résultat
+    if (el.key === 'e5') {
+      const rawText = el.text;
+      const dynamicText = replacePlaceholders(rawText);
+
+      return (
+        <div className="text-center">
+          <h2 className="text-xl font-bold mb-4">{el.title}</h2>
+          <div
+            className="mb-4 whitespace-pre-line calculator__answer-container"
+            dangerouslySetInnerHTML={{ __html: dynamicText }}
+          ></div>
+          <div className="flex gap-4 flex-wrap items-center justify-center mt-4 md:mt-0 flex-row md:flex-col lg:flex-nowrap lg:flex-row">
+            <button
+              onClick={handleRestart}
+              className="lg:whitespace-nowrap btn-contact bg-primary text-tertiary font-semibold px-6 py-3 rounded-lg shadow hover:bg-secondary transition"
+            >
+              Recommencez une estimation
+            </button>
+            <div className='btn-contact btn-calendly whitespace-nowrap bg-secondary text-tertiary font-semibold rounded-lg hover:bg-primary transition'>
+              <PopupButton
+                url="https://calendly.com/guerric-sant"
+
+                rootElement={document.getElementById("root")}
+                text="Prendre rendez-vous"
+                textColor="#E16C38"
+                color="#222222"
+              />
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    // Cas générique
+    return (
+      <div className="text-center">
+        <h2 className="text-xl font-bold mb-4">{el.title}</h2>
+        <p className="mb-4 whitespace-pre-line">{el.text}</p>
+        {el.form && (
+          <>
+            <form className="space-y-4 py-4" method="POST" onSubmit={handleSubmit}>
+              <input type="text" name="name" placeholder="Votre nom" className="w-full border p-2 rounded" required onChange={handleChange} value={formData.name} />
+              <input type="email" name="email" placeholder="Votre email" className="w-full border p-2 rounded" required  onChange={handleChange} value={formData.email} />
+              <textarea name="message" placeholder="Avez-vous autre chose à ajouter ?" required className="w-full border p-2 rounded h-32" onChange={handleChange} value={formData.message} />
+              <ReCAPTCHA
+                sitekey="6LdGaSkrAAAAACNZDvPmbsTJXtoKGn2kYC-97EvC"
+                onChange={setToken}
+              />
+              <button
+                type="submit"
+                onClick={() => {
+                  setTimeout(() => {
+                    window.location.href = '/';
+                  }, 2000);
+                }}
+                className="bg-primary text-secondary font-semibold px-4 py-2 rounded hover:bg-tertiary hover:text-primary transition"
+              >
+                Envoyer
+              </button>
+            </form>
+            {responseMsg && <div className='absolute inset-0 bg-black/50 z-100 flex items-center justify-center'><div className='bg-white m-2 p-6 rounded-xl w-full max-w-lg relative'><p>{responseMsg}</p><p>Vous allez être redirigé vers la page d'accueil</p></div></div>}
+          </>
+        )}
+        <div className="flex gap-4 flex-wrap items-center justify-center mt-4 md:mt-0 flex-row md:flex-col lg:flex-nowrap lg:flex-row">
+          <button
+            onClick={handleRestart}
+            className="lg:whitespace-nowrap btn-contact bg-primary text-tertiary font-semibold px-6 py-3 rounded-lg shadow hover:bg-secondary transition"
+          >
+            Recommencez une estimation
+          </button>
+          <div className='btn-contact btn-calendly whitespace-nowrap bg-secondary text-tertiary font-semibold rounded-lg hover:bg-primary transition'>
+            <PopupButton
+              url="https://calendly.com/guerric-sant"
+
+              rootElement={document.getElementById("root")}
+              text="Prendre rendez-vous"
+              textColor="#E16C38"
+              color="#222222"
+            />
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+
+  return (
+    <section className="calculator container mx-auto max-w-xl py-10 px-4">
+      <div className="bg-white rounded-xl shadow-lg p-8 min-h-[300px] flex items-center justify-center relative overflow-hidden">
+      <AnimatePresence mode="wait">
+        {step && flow[step] ? (
+          current.type === "answer" ? (
+            <motion.div
+              key="result"
+              initial={{ x: 200, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -200, opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="w-full"
+            >
+              {renderEnding(current)}
+            </motion.div>
+          ) : (
+            <motion.div
+              key={step}
+              initial={{ x: 200, opacity: 0 }}
+              animate={{ x: 0, opacity: 1 }}
+              exit={{ x: -200, opacity: 0 }}
+              transition={{ duration: 0.4 }}
+              className="w-full"
+            >
+              <h2 className="text-xl font-bold mb-6 text-gray-800">{current.question}</h2>
+              <div className="flex flex-col gap-4">
+                {current.type === 'multi-select' ? (
+                  current.options.map((opt) => (
+                    <label key={opt.value} className="flex items-center gap-2 cursor-pointer">
+                      <input
+                        className='calculator__checkbox checked:bg-primary checked:text-tertiary'
+                        type="checkbox"
+                        value={opt.value}
+                        checked={(answers[step] || []).includes(opt.value)}
+                        onChange={(e) => {
+                          const value = answers[step] || [];
+                          const newValue = e.target.checked
+                            ? [...value, opt.value]
+                            : value.filter((v) => v !== opt.value);
+                          setAnswers((prev) => ({ ...prev, [step]: newValue }));
+                        }}
+                      />
+                      {opt.label}
+                    </label>
+                  ))
+                ) : current.type === 'range' ? (
+                  <input
+                    type="range"
+                    min={current.min}
+                    max={current.max}
+                    step={current.step || 1}
+                    value={answers[step] !== undefined ? Number(answers[step]) : current.min}
+                    onChange={(e) => {
+                      const numericValue = Number(e.target.value);
+                      setAnswers((prev) => ({ ...prev, [step]: numericValue }));
+                    }}
+                    className="w-full"
+                  />
+                ) : (
+                  current.options.map((opt) => (
+                    <button
+                      key={opt.value}
+                      className="px-4 py-2 rounded-lg bg-secondary font-semibold text-primary hover:bg-primary hover:text-tertiary transition"
+                      onClick={() => handleAnswer(opt.value)}
+                    >
+                      {opt.label}
+                    </button>
+                  ))
+                )}
+
+                {(current.type === 'multi-select' || current.type === 'range') && (
+                  <button
+                    className="whitespace-nowrap px-6 py-3 bg-secondary text-tertiary font-semibold rounded-lg hover:bg-primary transition"
+                    onClick={() => handleAnswer(answers[step] || [])}
+                  >
+                    Continuer
+                  </button>
+                )}
+              </div>
+            </motion.div>
+          )
+        ) : null}
+      </AnimatePresence>
+
+      </div>
+    </section>
+  );
+}
