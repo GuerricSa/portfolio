@@ -1,10 +1,10 @@
 import { useState } from 'react';
-import ReCAPTCHA from 'react-google-recaptcha';
+import { GoogleReCaptchaProvider, useGoogleReCaptcha } from 'react-google-recaptcha-v3';
 
-export default function ContactForm({onClose}) {
+function ContactForm({onClose}) {
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
+  const { executeRecaptcha } = useGoogleReCaptcha();
   const [responseMsg, setResponseMsg] = useState('');
-  const [token, setToken] = useState('');
 
   const handleChange = (e) => {
     setFormData(prev => ({
@@ -16,8 +16,15 @@ export default function ContactForm({onClose}) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (!executeRecaptcha) {
+      setResponseMsg('reCAPTCHA non chargé');
+      return;
+    }
+
+    const token = await executeRecaptcha('contact_form');
+
     try {
-      const response = await fetch('http://localhost:5050/api/contact', {
+      const response = await fetch(`${process.env.REACT_APP_BACK_URL}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -53,14 +60,17 @@ export default function ContactForm({onClose}) {
         <input type="text" name="name" placeholder="Votre nom" className="w-full border p-2 rounded" required onChange={handleChange} value={formData.name} />
         <input type="email" name="email" placeholder="Votre email" className="w-full border p-2 rounded" required  onChange={handleChange} value={formData.email} />
         <textarea name="message" placeholder="Votre message" className="w-full border p-2 rounded h-32" required onChange={handleChange} value={formData.message} />
-        <ReCAPTCHA
-          sitekey="6LdGaSkrAAAAACNZDvPmbsTJXtoKGn2kYC-97EvC"
-          onChange={setToken}
-        />
         <button type="submit" className="bg-primary text-white px-4 py-2 rounded hover:bg-secondary">Envoyer</button>
         {responseMsg && <p>{responseMsg}</p>}
       </form>
     </div>
   </div>
+  );
+}
+export default function ContactModal(props) {
+  return (
+    <GoogleReCaptchaProvider reCaptchaKey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}>
+      <ContactForm {...props} />
+    </GoogleReCaptchaProvider>
   );
 }
