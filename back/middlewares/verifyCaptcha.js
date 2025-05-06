@@ -18,7 +18,7 @@ export const verifyCaptcha = async (req, res, next) => {
 
     const data = await response.json();
 
-    if (!data.success) {$
+    if (!data.success || data.score < 0.5) {
       return res.status(403).json({error: 'Échec de la vérification Captcha'});
     }
 

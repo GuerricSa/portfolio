@@ -122,7 +122,7 @@ export default function Calculator() {
             <input type="email" name="email" placeholder="Votre email" className="w-full border p-2 rounded" required  onChange={handleChange} value={formData.email} />
             <textarea name="message" placeholder="Avez-vous autre chose à ajouter ?" className="w-full border p-2 rounded h-32" onChange={handleChange} value={formData.message} />
             <ReCAPTCHA
-              sitekey="6LdGaSkrAAAAACNZDvPmbsTJXtoKGn2kYC-97EvC"
+              sitekey="6LeaNzArAAAAAGeH8hslBC-Z4T86BOyxv6_EjDUr"
               onChange={setToken}
             />
             <button type="submit" className="bg-primary text-secondary font-semibold px-4 py-2 rounded hover:bg-tertiary hover:text-primary transition">Envoyer</button>
@@ -178,7 +178,7 @@ export default function Calculator() {
               <input type="email" name="email" placeholder="Votre email" className="w-full border p-2 rounded" required  onChange={handleChange} value={formData.email} />
               <textarea name="message" placeholder="Avez-vous autre chose à ajouter ?" required className="w-full border p-2 rounded h-32" onChange={handleChange} value={formData.message} />
               <ReCAPTCHA
-                sitekey="6LdGaSkrAAAAACNZDvPmbsTJXtoKGn2kYC-97EvC"
+                sitekey="6LeaNzArAAAAAGeH8hslBC-Z4T86BOyxv6_EjDUr"
                 onChange={setToken}
               />
               <button

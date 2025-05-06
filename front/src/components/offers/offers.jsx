@@ -149,7 +149,6 @@ export default function Offers() {
 
   useEffect(() => {
     if (selectedCard) return;
-    console.log(selectedCard)
     const interval = setInterval(() => {
       setActivePath((prev => (prev + 1) % paths.length));
     }, 1000);

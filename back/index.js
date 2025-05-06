@@ -12,8 +12,10 @@ const app = express();
 
 // Middlewares globaux
 app.use(cors({
-  origin: '*', // Autorise toutes les origines (pour tester)
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Autorise certains types de requêtes
+  origin: '*',
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true,
 }));
 app.use(express.json());     // Parse automatiquement le JSON du body
 
