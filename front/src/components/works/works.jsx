@@ -8,7 +8,7 @@ import legalstartImage from '../../images/works_homepage/legalstart.webp'
 import batriboxImage from '../../images/works_homepage/batribox.webp'
 import premiumContactImage from '../../images/works_homepage/premiumContact.webp'
 import upplyImage from '../../images/works_homepage/upply.webp'
-import portfolioImage from '../../images/works_homepage/portolio.webp'
+import portfolioImage from '../../images/works_homepage/portfolio.webp'
 
 
 export default function Works() {
