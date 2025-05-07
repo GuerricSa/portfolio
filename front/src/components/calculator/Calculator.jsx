@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import flow from '../../content/Flow';
 import ReCAPTCHA from 'react-google-recaptcha';
@@ -11,8 +11,8 @@ export default function Calculator() {
   const [answers, setAnswers] = useState({});
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [responseMsg, setResponseMsg] = useState('');
-  const [token, setToken] = useState('');
   const [emailStepDone, setEmailStepDone] = useState(false);
+  const recaptchaRef = useRef(null);
 
   const current = flow[step];
 
@@ -74,26 +74,29 @@ export default function Calculator() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const updatedFormData = {
-      ...formData,
-      answers: JSON.stringify(answers),
-    };
-    console.log(updatedFormData)
+    const token = recaptchaRef.current?.getValue();
+
+    if (!token) {
+      setResponseMsg('Veuillez valider le reCAPTCHA.');
+      return;
+    }
 
     try {
-      const response = await fetch('http://localhost:5050/api/contact', {
+      const response = await fetch(`${process.env.REACT_APP_BACK_URL}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ ...updatedFormData, token }),
+        body: JSON.stringify({ ...formData, token }),
       });
 
       const data = await response.json();
-      setEmailStepDone(true);
+      setEmailStepDone(true)
 
       if (response.ok) {
-        setResponseMsg(data.success);
+        setResponseMsg(data.success || 'Message envoyé avec succès !');
+        recaptchaRef.current.reset(); // Reset le reCAPTCHA après soumission
+        setFormData({ name: '', email: '', message: '' }); // Réinitialiser le formulaire
       } else {
         setResponseMsg(data.error || 'Erreur inconnue.');
       }
@@ -122,8 +125,8 @@ export default function Calculator() {
             <input type="email" name="email" placeholder="Votre email" className="w-full border p-2 rounded" required  onChange={handleChange} value={formData.email} />
             <textarea name="message" placeholder="Avez-vous autre chose à ajouter ?" className="w-full border p-2 rounded h-32" onChange={handleChange} value={formData.message} />
             <ReCAPTCHA
-              sitekey="6LeaNzArAAAAAGeH8hslBC-Z4T86BOyxv6_EjDUr"
-              onChange={setToken}
+              sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
+              ref={recaptchaRef}
             />
             <button type="submit" className="bg-primary text-secondary font-semibold px-4 py-2 rounded hover:bg-tertiary hover:text-primary transition">Envoyer</button>
             {responseMsg && <p>{responseMsg}</p>}
@@ -178,8 +181,8 @@ export default function Calculator() {
               <input type="email" name="email" placeholder="Votre email" className="w-full border p-2 rounded" required  onChange={handleChange} value={formData.email} />
               <textarea name="message" placeholder="Avez-vous autre chose à ajouter ?" required className="w-full border p-2 rounded h-32" onChange={handleChange} value={formData.message} />
               <ReCAPTCHA
-                sitekey="6LeaNzArAAAAAGeH8hslBC-Z4T86BOyxv6_EjDUr"
-                onChange={setToken}
+                sitekey={process.env.REACT_APP_RECAPTCHA_SITE_KEY}
+                ref={recaptchaRef}
               />
               <button
                 type="submit"
