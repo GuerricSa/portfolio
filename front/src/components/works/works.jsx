@@ -8,6 +8,7 @@ import legalstartImage from '../../images/works_homepage/legalstart.webp'
 import batriboxImage from '../../images/works_homepage/batribox.webp'
 import premiumContactImage from '../../images/works_homepage/premiumContact.webp'
 import upplyImage from '../../images/works_homepage/upply.webp'
+import portfolioImage from '../../images/works_homepage/portolio.webp'
 
 
 export default function Works() {
@@ -45,7 +46,7 @@ export default function Works() {
       columnNumber: 2,
       title: "Portfolio",
       subtitle: "",
-      image: piguetGallandImage,
+      image: portfolioImage,
       link: "/",
       client: "Portfolio",
       technologies: ["React", "Tailwind", "node.js"]
