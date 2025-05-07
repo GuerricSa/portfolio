@@ -118,7 +118,6 @@ export default function Works() {
     setAutoScrollActive(false);
     clearTimeout(autoScrollTimeOut.current);
     autoScrollTimeOut.current = setTimeout(() => {
-      console.log("autoSroll activated")
       setAutoScrollActive(true)
     }, 30000);
   }
@@ -323,7 +322,6 @@ export default function Works() {
                     isProgrammaticScroll.current = true;
                     slider.scrollBy({ left: scrollAmount, behavior: 'smooth' });
                     setActiveSlide((prev) => (prev + 1));
-                    console.log(activeSlide)
                   }
 
                   handleUserInteraction();

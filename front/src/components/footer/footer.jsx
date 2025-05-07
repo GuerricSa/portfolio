@@ -10,7 +10,6 @@ export default function Footer() {
   const [isTop, setIsTop] = useState(false);
 
   const handleScroll = () => {
-    console.log("handleScroll")
     if (window.scrollY > 100) {
       setIsTop(true);
     } else {
