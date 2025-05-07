@@ -232,6 +232,7 @@ export default function Offers() {
   };
 
   const handleCardClick = async (index) => {
+    document.body.style.overflow = 'hidden';
     if (index === activeIndex) {
       setSelectedCard(cards[index]);
     } else {
@@ -240,7 +241,10 @@ export default function Offers() {
     }
   };
 
-  const closeModal = () => setSelectedCard(null);
+  const closeModal = () => {
+    document.body.style.overflow = '';
+    setSelectedCard(null);
+  }
 
   function Modal({ card, onClose }) {
     if (!card) return null;
@@ -301,7 +305,7 @@ export default function Offers() {
           </svg>
         </button>
         <div
-          className="bg-secondary rounded-lg p-8 lg:p-12 max-w-[90%] md:max-w-[80%] w-full relative animate-fade-in"
+          className="bg-secondary overflow-scroll max-h-[90%] rounded-lg p-8 lg:p-12 max-w-[90%] md:max-w-[80%] w-full relative animate-fade-in"
           onClick={(e) => e.stopPropagation()}
         >
           <button

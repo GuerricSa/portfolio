@@ -192,7 +192,9 @@ export default function Works() {
         <img
           src={work.image}
           alt={work.title}
+          width="500px"
           className="w-full"
+          loading='lazy'
         />
       </div>
 

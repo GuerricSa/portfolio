@@ -70,32 +70,32 @@ export default function Skills() {
 
   // Organisation des logos par catégorie
   const frontendLogos = [
-    { src: htmlLogo, alt: 'HTML' },
-    { src: cssLogo, alt: 'CSS' },
-    { src: jsLogo, alt: 'JavaScript' },
-    { src: reactLogo, alt: 'React' },
-    { src: tailwindLogo, alt: 'Tailwind CSS' }
+    { src: htmlLogo, alt: 'Logo HTML' },
+    { src: cssLogo, alt: 'Logo CSS' },
+    { src: jsLogo, alt: 'Logo JavaScript' },
+    { src: reactLogo, alt: 'Logo React' },
+    { src: tailwindLogo, alt: 'Logo Tailwind CSS' }
   ];
 
   const backendLogos = [
-    { src: nodeLogo, alt: 'Node.js' },
-    { src: phpLogo, alt: 'PHP' },
-    { src: rubyLogo, alt: 'Ruby' }
+    { src: nodeLogo, alt: 'Logo Node.js' },
+    { src: phpLogo, alt: 'Logo PHP' },
+    { src: rubyLogo, alt: 'Logo Ruby' }
   ];
 
   const cmsLogos = [
-    { src: wordpressLogo, alt: 'WordPress' },
-    { src: drupalLogo, alt: 'Drupal' },
-    { src: hubspotLogo, alt: 'HubSpot' }
+    { src: wordpressLogo, alt: 'Logo WordPress' },
+    { src: drupalLogo, alt: 'Logo Drupal' },
+    { src: hubspotLogo, alt: 'Logo HubSpot' }
   ];
 
   const designLogos = [
-    { src: figmaLogo, alt: 'Figma' }
+    { src: figmaLogo, alt: 'Logo Figma' }
   ];
 
   const toolsLogos = [
-    { src: notionLogo, alt: 'Notion' },
-    { src: slackLogo, alt: 'Slack' }
+    { src: notionLogo, alt: 'Logo Notion' },
+    { src: slackLogo, alt: 'Logo Slack' }
   ];
 
   const descriptions = {
@@ -140,6 +140,9 @@ export default function Skills() {
           key={logo.alt}
           src={logo.src}
           alt={logo.alt}
+          width="40px"
+          height="40px"
+          loading='lazy'
           onClick={() => setActiveDescription(circle)}
           className={`logo w-7 lg:w-10 h-7 lg:h-10 transition-[filter] grayscale hover:grayscale-0${activeDescription === circle ? " grayscale-0" : ""}`}
           style={{

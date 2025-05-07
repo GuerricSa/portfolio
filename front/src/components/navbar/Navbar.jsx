@@ -23,7 +23,7 @@ export default function Navbar() {
         {/* Logo */}
         <div className="text-2xl font-bold lg:w-80">
           <Link
-              to="/"
+            to="/"
             className="text-secondary flex logo--hover-effect"
             onMouseEnter={(e) => {
               const link = e.currentTarget;
