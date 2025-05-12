@@ -19,6 +19,13 @@ export default function Navbar() {
 
   return (
     <header className="mx-auto max-w-[1400px] mt-2.5 px-4 z-10 relative">
+      {/* Skip to Main Content Link */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:p-4 focus:bg-white focus:text-primary"
+      >
+        Aller au contenu principal
+      </a>
       <div className="mx-auto flex items-center justify-between py-4 px-6 relative bg-primary rounded-lg">
         {/* Logo */}
         <div className="text-2xl font-bold lg:w-80">

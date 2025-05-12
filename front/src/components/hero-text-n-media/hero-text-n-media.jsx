@@ -36,7 +36,11 @@ export default function HeroTextNMedia() {
   }, [])
 
   return (
-    <section ref={sectionRef} className='container transition-transform duration-300 ease-out justify-between flex flex-col items-center lg:flex-row gap-14 py-10 lg:py-28'>
+    <section
+      ref={sectionRef}
+      id="main-content"
+      className='container transition-transform duration-300 ease-out justify-between flex flex-col items-center lg:flex-row gap-14 py-10 lg:py-28'
+    >
       <div className='flex items-center'>
         <h1 className='text-center lg:text-left lg:max-w-xl'>
           Hello,
@@ -52,7 +56,7 @@ export default function HeroTextNMedia() {
         alt='Portrait de Guerric SANT'
         width="400"
         height="540"
-        loading="eager" 
+        loading="eager"
         style={{ transform: `rotate(${rotation}deg)` }}
       />
     </section>

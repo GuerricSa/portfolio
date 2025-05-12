@@ -14,6 +14,7 @@ import portfolioImage from '../../images/works_homepage/portfolio.webp'
 export default function Works() {
   const [activeSlide, setActiveSlide] = useState(0);
   const [autoScrollActive, setAutoScrollActive] = useState(true);
+  const [selectedWork, setSelectedWork] = useState(null);
   const autoScrollTimeOut = useRef(null);
   const isProgrammaticScroll = useRef(false);
   const cardRef = useRef(null);
@@ -180,15 +181,34 @@ export default function Works() {
     return works.filter(work => work.columnNumber === columnIndex + 1);
   };
 
+  const handleWorkClick = (work) => {
+    setSelectedWork(work);
+    document.body.style.overflow = 'hidden';
+  };
+
+  const closeModal = () => {
+    setSelectedWork(null);
+    document.body.style.overflow = '';
+  };
+
   const WorkCard = ({ work, heightClass, columnIndex, isMobile = false }) => (
     <li
       ref={cardRef}
       className={`work-card ${
         isMobile ? 'min-w-[100%] sm:min-w-[75%] md:min-w-[50%] snap-start' : 'w-3/6 lg:w-full'
-      } ${heightClass} bg-secondary rounded-lg overflow-hidden relative flex flex-col justify-between`}
+      } ${heightClass} bg-secondary rounded-lg overflow-hidden relative flex flex-col justify-between cursor-pointer`}
+      onClick={() => handleWorkClick(work)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          handleWorkClick(work);
+        }
+      }}
+      aria-label={`Voir les détails du projet ${work.title}`}
     >
-      <div className={`overflow-y-auto no-scrollbar ${ isMobile ? "h-56" : "h-full"}`}
-      >
+      <div className={`overflow-y-auto no-scrollbar ${ isMobile ? "h-56" : "h-full"}`}>
         <img
           src={work.image}
           alt={work.title}
@@ -207,15 +227,8 @@ export default function Works() {
         ? "p-6"
         : 'px-2 py-4'
       }`}>
-        <h3 className={`text-2xl leading-none font-bold cursor-pointer ${(work.subtitle && work.subtitle !== "")? "" : "mb-2"}`}>
-          <a
-            href={work.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-primary transition-[color] ease-in-out duration-300 hover:text-tertiary"
-          >
-            {work.title}
-          </a>
+        <h3 className={`text-2xl leading-none font-bold ${(work.subtitle && work.subtitle !== "")? "" : "mb-2"}`}>
+          {work.title}
         </h3>
         {(work.subtitle && work.subtitle !== "")
           ? <p className='mb-2'>{work.subtitle}</p>
@@ -235,10 +248,69 @@ export default function Works() {
     </li>
   );
 
+  function WorkModal({ work, onClose }) {
+    if (!work) return null;
+
+    return (
+      <div
+        className="fixed inset-0 bg-black/60 flex items-center justify-center z-50 animate-fade-in-container"
+        onClick={onClose}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={`modal-title-${work.id}`}
+      >
+        <div
+          className="bg-secondary rounded-lg p-8 max-w-[90%] md:max-w-[80%] w-full max-h-[90vh] overflow-y-auto animate-fade-in"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <button
+            className="absolute top-4 right-4 text-primary hover:text-tertiary transition-colors"
+            onClick={onClose}
+            aria-label="Fermer la modal"
+          >
+            ✕
+          </button>
+          <div className="mb-6">
+            <h2 id={`modal-title-${work.id}`} className="text-3xl font-bold mb-4">{work.title}</h2>
+            {work.subtitle && <p className="text-lg mb-4">{work.subtitle}</p>}
+            <div className="flex gap-2 flex-wrap mb-6">
+              {work.technologies.map((tech, i) => (
+                <span
+                  key={i}
+                  className="px-3 py-1 bg-primary text-secondary rounded-full text-sm"
+                >
+                  {tech}
+                </span>
+              ))}
+            </div>
+          </div>
+          <div className="mb-8">
+            <img
+              src={work.image}
+              alt={work.title}
+              className="w-full rounded-lg"
+            />
+          </div>
+          <div className="flex justify-end">
+            <a
+              href={work.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-primary text-tertiary font-semibold px-6 py-3 rounded-lg shadow hover:bg-tertiary hover:text-primary transition"
+              aria-label={`Se rendre sur le site ${work.title} (s'ouvre dans un nouvel onglet)`}
+            >
+              Se rendre sur le site
+            </a>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <section className="py-20 bg-primary">
+    <section className="py-20 bg-primary" aria-labelledby="works-title">
       <div className="container">
-        <h2 className="text-4xl font-bold mb-12 text-center text-secondary">Mes réalisations</h2>
+        <h2 id="works-title" className="text-4xl font-bold mb-12 text-center text-secondary">Mes réalisations</h2>
 
         {isDesktop ? (
           // Desktop: 3 colonnes, une UL par colonne
@@ -265,6 +337,7 @@ export default function Works() {
               ref={sliderRef}
               onScroll={handleUserInteraction}
               className="flex gap-8 lg:hidden snap-x snap-mandatory overflow-x-auto scroll-smooth touch-auto"
+              aria-label="Liste des projets"
             >
               {works.map((work, index) => (
                 <WorkCard
@@ -301,6 +374,7 @@ export default function Works() {
                 }
               }}
               className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-primary rounded-full p-2 shadow-md"
+              aria-label="Projet précédent"
             >
               ◀
             </button>
@@ -330,13 +404,14 @@ export default function Works() {
                 }
               }}
               className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-white/80 hover:bg-white text-primary rounded-full p-2 shadow-md"
+              aria-label="Projet suivant"
             >
               ▶
             </button>
           </div>
         )}
       </div>
+      <WorkModal work={selectedWork} onClose={closeModal} />
     </section>
   );
-
 }

@@ -14,13 +14,13 @@ export default function Offers() {
       id: 1,
       title: "Site web",
       description: "Un site professionnel pour présenter votre activité, vos services et faciliter la prise de contact.",
-      content: "Cette offre s’adresse à toute personne ou structure souhaitant être visible en ligne et inspirer confiance. C’est le format classique pour présenter ses services, son parcours et permettre aux visiteurs de prendre contact facilement.",
+      content: "Cette offre s'adresse à toute personne ou structure souhaitant être visible en ligne et inspirer confiance. C'est le format classique pour présenter ses services, son parcours et permettre aux visiteurs de prendre contact facilement.",
       included: [
         "À partir de 4 pages (Accueil, Services, À propos, Contact, etc.)",
         "Responsive design (mobile / tablette / desktop)",
         "Optimisation des temps de chargement et du référencement naturel (SEO)",
         "Formulaire de contact",
-        "Intégration d’un outil d’analyse (Google Analytics, Plausible, etc.)"
+        "Intégration d'un outil d'analyse (Google Analytics, Plausible, etc.)"
       ],
       price: "À partir de 2000€",
       link: "/offres/site-vitrine",
@@ -32,7 +32,7 @@ export default function Offers() {
       description: "Une landing page conçue pour convertir vos visiteurs en clients, avec un design percutant et un message clair.",
       content: "Cette offre est parfaite si vous souhaitez promouvoir une offre, un service ou un événement spécifique. Elle est conçue pour convaincre et guider l'utilisateur vers une action précise, sur une seule page optimisée pour la conversion.",
       included: [
-        "Conception d’une maquette sur-mesure (à ajouter au budget)",
+        "Conception d'une maquette sur-mesure (à ajouter au budget)",
         "Intégration responsive (HTML / CSS / React ou CMS)",
         "Argumentaire structuré avec CTA clairs",
         "Optimisation des performances et du taux de conversion",
@@ -52,8 +52,9 @@ export default function Offers() {
         "Multilingue",
         "Animations avancées (Framer Motion, micro-interactions…)",
         "Connexions à des outils tiers (CRM, automatisations)",
-        "Accompagnement stratégique (structure du site, tunnel de conversion)",
-        "Rédaction SEO (via partenaire ou moi-même, selon vos besoins)"
+        "Création d'e-mail sur mesure pour vos campagnes",
+        "Rédaction SEO (via partenaire ou moi-même, selon vos besoins)",
+        "..."
       ],
       price: "Sur devis",
       link: "/offres/sur-mesure",
@@ -307,6 +308,10 @@ export default function Offers() {
         <div
           className="bg-secondary overflow-scroll max-h-[90%] rounded-lg p-8 lg:p-12 max-w-[90%] md:max-w-[80%] w-full relative animate-fade-in"
           onClick={(e) => e.stopPropagation()}
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby={`modal-title-${selectedCard.id}`}
+          aria-describedby={`modal-description-${selectedCard.id}`}
         >
           <button
             className="absolute top-2 right-2 text-black"

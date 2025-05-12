@@ -99,10 +99,10 @@ export default function Skills() {
   ];
 
   const descriptions = {
-    frontendLogos: "<h3><strong>Frontend</strong></h3><p>Le front-end, c’est la partie visible d’un site : ce que les utilisateurs voient et avec quoi ils interagissent. Cela inclut l’affichage des contenus, les animations, les boutons ou encore la navigation.</p><p>J’utilise principalement <strong>HTML</strong>, <strong>CSS</strong>, <strong>JavaScript</strong>, <strong>React</strong> et <strong>Tailwind CSS</strong> pour créer des interfaces modernes, rapides et adaptées à tous les écrans.</p><p>C'est le coeur de mon métier et ce pourquoi la majorité de mes clients me paient.</p>",
-    backendLogos: "<h3><strong>Backend</strong></h3><p>Le back-end désigne la partie “invisible” d’un site ou d’une application : gestion des données, des utilisateurs, des formulaires ou encore des bases de données.</p><p>J’ai découvert le back-end pendant ma formation avec <strong>Ruby on Rails</strong>, puis j’ai continué à apprendre avec <strong>Node.js</strong> et <strong>PHP</strong sur différents projets clients.</p><p>Ces compétences me permettent de créer des sites plus dynamiques, capables de stocker et traiter des informations de manière fiable.</p>",
-    cmsLogos: "<h3><strong>CMS</strong></h3><p>Un CMS (Content Management System) est un outil qui permet de créer et gérer un site sans avoir à coder toute la structure à la main. C’est très pratique pour les sites vitrines ou les blogs.</p><p>Je maîtrise plusieurs CMS populaires comme <strong>WordPress</strong>, <strong>Drupal</strong> et <strong>HubSpot</strong>. Je les utilise pour créer des sites faciles à mettre à jour, performants et bien référencés.</p><p>Dans mon dernier job, j’ai beaucoup travaillé sur <strong>HubSpot</strong> et <strong>Wordpress</strong>pour intégrer des pages sur-mesure et accompagner des clients B2B dans leur stratégie web.</p>",
-    toolsLogos: "<h3><strong>Autres outils</strong></h3><p>Au-delà du code, j’utilise plusieurs outils pour mieux collaborer, structurer mes projets ou concevoir des maquettes avant le développement.</p><p><strong>Figma</strong> me permet de transformer des idées en maquettes visuelles claires. <strong>Notion</strong est mon centre de gestion de projet : je m’en sers pour organiser les tâches et échanger avec mes clients, je m'en sers d'ailleurs aussi pour gérer mon entreprise</strong>. Slack est un outil de communication rapide, très utilisé en équipe.</p><p>Bien sur, il y a de nombreux autres outils avec lesquelles je peux travailler. Que ce soit chez Microsoft ou chez Google.</p>",
+    frontendLogos: "<h3><strong>Frontend</strong></h3><p>Le front-end, c'est la partie visible d'un site : ce que les utilisateurs voient et avec quoi ils interagissent. Cela inclut l'affichage des contenus, les animations, les boutons ou encore la navigation.</p><p>J'utilise principalement <strong>HTML</strong>, <strong>CSS</strong>, <strong>JavaScript</strong>, <strong>React</strong> et <strong>Tailwind CSS</strong> pour créer des interfaces modernes, rapides et adaptées à tous les écrans.</p><p>C'est le coeur de mon métier et ce pourquoi la majorité de mes clients me paient.</p>",
+    backendLogos: "<h3><strong>Backend</strong></h3><p>Le back-end désigne la partie 'invisible' d'un site ou d'une application : gestion des données, des utilisateurs, des formulaires ou encore des bases de données.</p><p>J'ai découvert le back-end pendant ma formation avec <strong>Ruby on Rails</strong>, puis j'ai continué à apprendre avec <strong>Node.js</strong> et <strong>PHP</strong> sur différents projets clients.</p><p>Ces compétences me permettent de créer des sites plus dynamiques, capables de stocker et traiter des informations de manière fiable.</p>",
+    cmsLogos: "<h3><strong>CMS</strong></h3><p>Un CMS (Content Management System) est un outil qui permet de créer et gérer un site sans avoir à coder toute la structure à la main. C'est très pratique pour les sites vitrines ou les blogs.</p><p>Je maîtrise plusieurs CMS populaires comme <strong>WordPress</strong>, <strong>Drupal</strong> et <strong>HubSpot</strong>. Je les utilise pour créer des sites faciles à mettre à jour, performants et bien référencés.</p><p>Dans mon dernier job, j'ai beaucoup travaillé sur <strong>HubSpot</strong> et <strong>Wordpress</strong>pour intégrer des pages sur-mesure et accompagner des clients B2B dans leur stratégie web.</p>",
+    toolsLogos: "<h3><strong>Autres outils</strong></h3><p>Au-delà du code, j'utilise plusieurs outils pour mieux collaborer, structurer mes projets ou concevoir des maquettes avant le développement.</p><p><strong>Figma</strong> me permet de transformer des idées en maquettes visuelles claires. <strong>Notion</strong> est mon centre de gestion de projet : je m'en sers pour organiser les tâches et échanger avec mes clients, je m'en sers d'ailleurs aussi pour gérer mon entreprise</strong>. Slack est un outil de communication rapide, très utilisé en équipe.</p><p>Bien sur, il y a de nombreux autres outils avec lesquelles je peux travailler. Que ce soit chez Microsoft ou chez Google.</p>",
   }
 
 
@@ -136,44 +136,56 @@ export default function Skills() {
     return logos.map((logo, index) => {
       const position = positions[logos.length][index];
       return (
-        <img
+        <button
           key={logo.alt}
-          src={logo.src}
-          alt={logo.alt}
-          width="40px"
-          height="40px"
-          loading='lazy'
           onClick={() => setActiveDescription(circle)}
           className={`logo w-7 lg:w-10 h-7 lg:h-10 transition-[filter] grayscale hover:grayscale-0${activeDescription === circle ? " grayscale-0" : ""}`}
           style={{
             left: position.left,
             top: position.top,
-            transform: 'translate(-50%, -50%)'
+            transform: 'translate(-50%, -50%)',
+            background: 'none',
+            border: 'none',
+            padding: 0,
+            cursor: 'pointer'
           }}
-        />
+          aria-label={`Voir la description de ${logo.alt}`}
+          aria-selected={activeDescription === circle}
+          role="tab"
+          aria-controls={`${circle}-panel`}
+        >
+          <img
+            src={logo.src}
+            alt={logo.alt}
+            width="40px"
+            height="40px"
+            loading='lazy'
+            className="w-full h-full"
+          />
+        </button>
       );
     });
   };
 
   return (
-    <section className="bg-primary skills">
+    <section className="bg-primary skills" aria-labelledby="skills-title">
       <div className="container">
-        <h2 className="text-4xl font-bold mb-8 lg:mb-12 text-secondary">Mes compétences techniques</h2>
+        <h2 id="skills-title" className="text-4xl font-bold mb-8 lg:mb-12 text-secondary">Mes compétences techniques</h2>
         <div
           className="flex flex-col md:flex-row-reverse justify-between gap-5"
         >
-          <div className="w-full md:w-1/2 bg-secondary rounded-md">
+          <div className="w-full md:w-1/2 bg-secondary rounded-md" role="region" aria-label="Compétences techniques">
             <div className="circle-container">
-              <div className="circle circle-1">
+              <div className="circle circle-1" role="group" aria-label="Compétences Frontend">
                 {positionLogos(frontendLogos, "frontendLogos")}
               </div>
-              <div className="circle circle-2">
+              <div className="circle circle-2" role="group" aria-label="Compétences Backend">
                 {positionLogos(backendLogos, "backendLogos")}
               </div>
-              <div className="circle circle-3">
+              <div className="circle circle-3" role="group" aria-label="Compétences CMS">
                 {positionLogos(cmsLogos, "cmsLogos")}
               </div>
-              <div className="circle circle-4">
+              <div className="circle circle-4" role="group" aria-label="Outils et Design">
                 {positionLogos([...designLogos, ...toolsLogos], "toolsLogos")}
               </div>
             </div>
@@ -181,6 +193,8 @@ export default function Skills() {
           <div
             className="w-full md:w-1/2 h-full relative skills__descriptions-container"
             style={{minHeight: containerHeight}}
+            role="region"
+            aria-label="Description des compétences"
           >
             {Object.entries(descriptions).map(([key, desc]) => (
               <div
@@ -190,6 +204,9 @@ export default function Skills() {
                   ${activeDescription === key ? 'opacity-100 translate-x-0' : 'opacity-0 -translate-x-full pointer-events-none'}`}
                 dangerouslySetInnerHTML={{ __html: desc }}
                 style={{minHeight: containerHeight}}
+                role="tabpanel"
+                aria-hidden={activeDescription !== key}
+                id={`${key}-panel`}
               />
             ))}
           </div>
